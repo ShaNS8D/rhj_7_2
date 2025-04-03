@@ -6,8 +6,8 @@ import './SearchBar.css';
 const SearchBar = () => {
   const search = useSelector(state => state.search);
   const dispatch = useDispatch();
-  function handleSearchChange({ target }) {
-    const { name, value } = target;
+  function handleSearchChange( e ) {
+    const { name, value } = e.target;
     dispatch(changeSearchField(name, value));
   }
 
@@ -23,7 +23,7 @@ const SearchBar = () => {
           value={search.query}
           onChange={handleSearchChange}
           placeholder="Начните вводить наименование услуги"
-          autoComplete="off"
+          autoComplete="nope"
         />
       </div>
     </form>

@@ -9,49 +9,29 @@ const Table = () => {
   const dispatch = useDispatch();
   const tableLength = 3;
 
-  function handleDeleteClick(id) {
-    return dispatch(removeService(id));
-  }
+  const handleDeleteClick = (id) => dispatch(removeService(id));  
+  const handleEditClick = (id) => {
+    const service = services.find((service) => service.id === id);
+    if (service) {
+      dispatch(editService(service.name, service.price, { state: true, index: services.indexOf(service) }));
+    }
+  };
 
-  function handleEditClick(id) {
-    const index = services.findIndex((service) => service.id === id);
-    const { name, price } = services[index];
-    return dispatch(editService(name, price, { state: true, index }));
-  }
-
-  let filteredList = null;
-
-  if (search.query) {
-    filteredList = services.map(({ id, name, price }) => {
-      if (!name.startsWith(search.query)) {
-        return null;
-      }
-
+  const getFilteredList = () => {
+    if (!search.query) return null;    
+    const filtered = services.filter(service => 
+      service.name.toLowerCase().includes(search.query.toLowerCase())
+    );
+    console.log(services)
+    if (filtered.length === 0) {
       return (
-        <TableRow
-          key={id}
-          id={id}
-          name={name}
-          price={price}
-          onDeleteClick={() => handleDeleteClick(id)}
-          onEditClick={() => handleEditClick(id)}
-        />
-      );
-    });
-
-    if (!filteredList.filter(Boolean).length) {
-      filteredList = (
         <tr>
-          <td colSpan={tableLength}>
-            По вашему запросу ничего не найдено
-          </td>
+          <td colSpan={tableLength}>По вашему запросу ничего не найдено</td>
         </tr>
       );
     }
-  }
-
-  const list = services.map(({ id, name, price }) => {
-    return (
+    
+    return filtered.map(({ id, name, price }) => (
       <TableRow
         key={id}
         id={id}
@@ -60,8 +40,19 @@ const Table = () => {
         onDeleteClick={() => handleDeleteClick(id)}
         onEditClick={() => handleEditClick(id)}
       />
-    );
-  })
+    ));
+  };
+
+  const renderList = services.map(({ id, name, price }) => (
+    <TableRow
+      key={id}
+      id={id}
+      name={name}
+      price={price}
+      onDeleteClick={() => handleDeleteClick(id)}
+      onEditClick={() => handleEditClick(id)}
+    />
+  ));
 
   return (
     <table className="Table">
@@ -72,9 +63,9 @@ const Table = () => {
           <th>Действия</th>
         </tr>
       </thead>
-      <tbody>{filteredList || list}</tbody>
+      <tbody>{getFilteredList() || renderList}</tbody>
     </table>
   );
-}
+};
 
 export default Table;
